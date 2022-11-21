@@ -4,10 +4,10 @@ import pandas as pd
 
 from sklearn.model_selection import train_test_split
 
-from src import config
+from src import utils
 
 
-class LocalData:
+class DataPointer:
     """Data class that only stores filenames ways to access the data and preprocessing functions.
     The actual data is not stored in the class to prevent unauthorized access.
     Only supports csv's for now.
@@ -62,4 +62,5 @@ class LocalData:
         X = df.drop(columns=[self.target_column])
         return X, y
 
-
+    def __repr__(self):
+        return utils.simplified_repr(self)

@@ -58,9 +58,9 @@ class CollaborationTitanic(collaboration.Collaboration):
                 'nominal_categories': stats.ColumnCategories(FEATURES_NOMINAL, flatten_list=False),
                 'target_classes': stats.ColumnCategories(TARGET, flatten_list=True)
             },
-            transformers=model.get_standard_transformer_pipeline(),
-            # classifier=model.LocalClassifier(clf=model.get_standard_classifier(), n_local_iterations=10, batch_size=50),
-            # classifier=model.get_standard_classifier(),
+            transformers=model.get_standard_transformer_pipeline(features_nominal=FEATURES_NOMINAL,
+                                                                 features_ordinal=FEATURES_ORDINAL,
+                                                                 features_continuous=FEATURES_INTERVAL+FEATURES_RANGE),
             classifier=model.get_standard_classifier(random_state=RANDOM_STATE),
             classifier_aggregator=aggregation.FedAvg(n_global_iterations=N_GLOBAL_ITERATIONS),
             statistics_aggregators={
@@ -76,7 +76,7 @@ class ClientA(client.Client):
     def __init__(self):
         super(ClientA, self).__init__(
             name='A',
-            data_object=DataA(),
+            data_pointer=DataA(),
             clf_local=None,
             transformers=None,
             statistics=None
@@ -88,14 +88,14 @@ class ClientB(client.Client):
     def __init__(self):
         super(ClientB, self).__init__(
             name='B',
-            data_object=DataB(),
+            data_pointer=DataB(),
             clf_local=None,
             transformers=None,
             statistics=None
         )
 
 
-class DataA(data.LocalData):
+class DataA(data.DataPointer):
 
     def __init__(self):
         super(DataA, self).__init__(
@@ -108,7 +108,7 @@ class DataA(data.LocalData):
         )
 
 
-class DataB(data.LocalData):
+class DataB(data.DataPointer):
 
     def __init__(self):
         super(DataB, self).__init__(

@@ -4,13 +4,14 @@ import pandas as pd
 
 from sklearn.base import BaseEstimator, ClassifierMixin
 from functools import reduce
-
+from src import utils
 
 class Aggregator:
 
     def __init__(self):
         pass
-
+    def __repr__(self):
+        return utils.simplified_repr(self)
 
 class SumValues(Aggregator):
 
@@ -75,6 +76,8 @@ class FedAvg(Aggregator):
         self.weights = local_counts / global_count
         return self
 
+    def __repr__(self):
+        return utils.simplified_repr(self)
 
 # class FedAvg(BaseEstimator, ClassifierMixin):
 #     """Federated averaging as proposed by McMahan et al (2017)

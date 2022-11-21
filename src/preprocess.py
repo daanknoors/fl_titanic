@@ -73,7 +73,10 @@ def split_x_y(df, y_column=None):
 
 class GenericPreprocessor(BaseEstimator, TransformerMixin):
     """Generic preprocessing transformer with mutations for specific data types"""
-    def __init__(self, categories=None):
+    def __init__(self, features_nominal, features_ordinal, features_continuous, categories=None):
+        self.features_nominal = features_nominal
+        self.features_ordinal = features_ordinal
+        self.features_continuous = features_continuous
         self.categories = categories
 
 
@@ -82,14 +85,14 @@ class GenericPreprocessor(BaseEstimator, TransformerMixin):
         X = X.drop(config.FEATURES_DROP, errors='ignore')
 
         # define feature categories and check if in input dataframe
-        self.features_nominal_ = [x for x in X.columns if x in config.FEATURES_NOMINAL]
-        self.features_ordinal_ = [x for x in X.columns if x in config.FEATURES_ORDINAL]
-        self.features_continuous_ = [x for x in X.columns if x in config.FEATURES_RANGE + config.FEATURES_INTERVAL]
+        features_nominal_ = [x for x in X.columns if x in self.features_nominal]
+        features_ordinal_ = [x for x in X.columns if x in self.features_ordinal]
+        features_continuous_ = [x for x in X.columns if x in self.features_continuous]
 
         self.transformer_ = ColumnTransformer([
-            ('ohe_nominal', OneHotEncoder(sparse=False, categories=self.categories, handle_unknown='ignore'), self.features_nominal_),
-            ('impute_ordinal', SimpleImputer(missing_values=np.nan, strategy='most_frequent'), self.features_ordinal_),
-            ('impute_continuous', SimpleImputer(missing_values=np.nan, strategy='median'), self.features_continuous_)
+            ('ohe_nominal', OneHotEncoder(sparse=False, categories=self.categories, handle_unknown='ignore'), features_nominal_),
+            ('impute_ordinal', SimpleImputer(missing_values=np.nan, strategy='most_frequent'), features_ordinal_),
+            ('impute_continuous', SimpleImputer(missing_values=np.nan, strategy='median'), features_continuous_)
         ])
         self.transformer_.fit(X, y)
 

@@ -2,7 +2,7 @@
 import numpy as np
 from functools import reduce
 from src import aggregation
-
+from src import utils
 
 class Statistic:
 
@@ -11,6 +11,10 @@ class Statistic:
 
     def compute(self, df):
         pass
+
+    def __repr__(self):
+        return utils.simplified_repr(self)
+
     #
     # def aggregate(self):
     #     pass

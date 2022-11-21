@@ -31,10 +31,11 @@ class Collaboration:
             return self.scores_
         return pd.json_normalize(self.scores_).apply(pd.Series.explode).reset_index(drop=True)
 
+    def __repr__(self):
+        return utils.simplified_repr(self)
     # def __repr__(self):
-    #     # return f'{self.__class__.__name__}(clients={self.clients}'
     #     attributes = ", ".join([f'{k}={v}' for k, v in vars(self).items()])
     #
-    #     return f'{self.__class__.__name__}(\n{attributes})'
+    #     return f'{self.__class__.__name__}({attributes})\n'
 
 

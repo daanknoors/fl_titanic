@@ -9,6 +9,7 @@ from src import collaboration
 from src import aggregation
 from src import stats
 from src import model
+from src import utils
 
 
 class Server:
@@ -29,7 +30,7 @@ class Server:
     def run_statistics(self):
         # compute local stats
         for client_instance in self.collab.clients:
-            df_train = client_instance.data_object.load_train_data(split_xy=False)
+            df_train = client_instance.data_pointer.load_train_data(split_xy=False)
             for method_name, stat_method in client_instance.statistics.items():
                 stat_method.compute(df_train)
 
@@ -43,8 +44,8 @@ class Server:
         return self
 
     # def _run_transformers(self, client_instance):
-    #     X_train, y_train = client_instance.data_object.load_train_data(split_xy=True)
-    #     X_test, y_test = client_instance.data_object.load_test_data(split_xy=True)
+    #     X_train, y_train = client_instance.data_pointer.load_train_data(split_xy=True)
+    #     X_test, y_test = client_instance.data_pointer.load_test_data(split_xy=True)
     #
     #     X_train = self.collab.transformers.fit_transform(X_train, y_train)
     #     X_test = self.collab.transformers.transform(X_test)
@@ -79,6 +80,8 @@ class Server:
             self.collab.classifier.intercept_ = intercept
             self.collab.classifier.classes_ = classes
 
+    def __repr__(self):
+        return utils.simplified_repr(self)
 
     # def _fit_local_classifiers(self):
     #     for client_instance in self.collab.clients:

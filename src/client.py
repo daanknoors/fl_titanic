@@ -9,16 +9,16 @@ from sklearn.utils.validation import check_is_fitted
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 
-from src import config
 from src import data
+from src import utils
 
 
 class Client:
     """Client that has pointer to local data"""
 
-    def __init__(self, name, data_object, clf_local=None, transformers=None, statistics=None):
+    def __init__(self, name, data_pointer, clf_local=None, transformers=None, statistics=None):
         self.name = name
-        self.data_object = data_object
+        self.data_pointer = data_pointer
         self.clf_local = clf_local
         self.transformers = transformers
         self.statistics = statistics
@@ -50,14 +50,15 @@ class Client:
 
 
     def _run_transformers(self):
-        X_train, y_train = self.data_object.load_train_data(split_xy=True)
-        X_test, y_test = self.data_object.load_test_data(split_xy=True)
+        X_train, y_train = self.data_pointer.load_train_data(split_xy=True)
+        X_test, y_test = self.data_pointer.load_test_data(split_xy=True)
 
         X_train = self.transformers.fit_transform(X_train, y_train)
         X_test = self.transformers.transform(X_test)
         return X_train, X_test, y_train, y_test
 
-
+    def __repr__(self):
+        return utils.simplified_repr(self)
 
 # class ClientUpdate(BaseEstimator, ClassifierMixin):
 #

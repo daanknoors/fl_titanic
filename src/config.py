@@ -62,7 +62,7 @@ class CollaborationTitanic(collaboration.Collaboration):
             # classifier=model.LocalClassifier(clf=model.get_standard_classifier(), n_local_iterations=10, batch_size=50),
             # classifier=model.get_standard_classifier(),
             classifier=model.get_standard_classifier(random_state=RANDOM_STATE),
-            classifier_aggregator=aggregation.FedAvg(n_global_iterations=50),
+            classifier_aggregator=aggregation.FedAvg(n_global_iterations=N_GLOBAL_ITERATIONS),
             statistics_aggregators={
                 'count_records': aggregation.SumValues(),
                 'nominal_categories': aggregation.NestedListUnion(unique=True),
@@ -142,6 +142,7 @@ FILENAME_TEST_UNLABELED = 'test.csv'
 
 # config settings
 RANDOM_STATE = 42
+N_GLOBAL_ITERATIONS = 20
 SCORING_FUNCTION = 'roc_auc'
 COlOR_PALETTE = ["#393e46", "#00cde3", "#ff5722", "#d72323"]
 

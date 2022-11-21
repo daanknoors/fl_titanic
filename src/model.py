@@ -109,8 +109,7 @@ class BatchSGD(SGDClassifier):
     def partial_fit(self, X, y, classes=None, sample_weight=None):
         """Perform partial fit on batch of samples"""
         # split data in batches
-        batch_size = self.batch_size if (self.batch_size is not None or self.batch_size == 0) else X.shape[0]
-        X_batches, y_batches = self._split_batches(X, y, batch_size)
+        X_batches, y_batches = self._split_batches(X, y)
 
         # train model for specified number of epochs
         for _ in range(0, self.n_local_iterations):
@@ -118,16 +117,21 @@ class BatchSGD(SGDClassifier):
                 super().partial_fit(X_batch, y_batch, classes=classes, sample_weight=sample_weight)
         return self
 
-
-    @staticmethod
-    def _split_batches(X, y, batch_size):
+    def _split_batches(self, X, y):
         """Split features and target in batches according to batch_size"""
+        batch_size = self._check_batch_size(X.shape[0])
+
         # shuffle X and Y
         X, y = shuffle(X, y)
         n_splits = X.shape[0] / batch_size
         X_batches = np.array_split(X, n_splits)
         y_batches = np.array_split(y, n_splits)
         return X_batches, y_batches
+
+    def _check_batch_size(self, n_records):
+        if (self.batch_size is None) or (self.batch_size == 0) or (self.batch_size > n_records):
+            return n_records
+        return self.batch_size
 
 # class LocalClassifier(BaseEstimator, ClassifierMixin):
 #

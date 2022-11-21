@@ -54,6 +54,9 @@ class NestedListUnion(Aggregator):
 
 
 class FedAvg(Aggregator):
+    """Federated averaging as proposed by McMahan et al (2017)
+    article: https://arxiv.org/abs/1602.05629
+    """
 
     def __init__(self, n_global_iterations, weights=None):
         self.n_iterations = n_global_iterations

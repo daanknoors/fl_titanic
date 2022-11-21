@@ -29,7 +29,7 @@ class Client:
         #todo check whether data inherits from data class (or subclasses it)
         pass
 
-    def fit_classifier(self, classes):
+    def fit_classifier(self, classes, batch_size, n_local_iterations):
         X_train, X_test, y_train, y_test = self._run_transformers()
 
         if not hasattr(self.clf_local, 'coef_'):
@@ -41,12 +41,35 @@ class Client:
             averaged_model_score = self.clf_local.score(X_test, y_test)
             self.global_scores_.append(averaged_model_score)
 
-        self.clf_local.partial_fit(X_train, y_train, classes=classes)
+        # split data in batches
+        batch_size = self._check_batch_size(batch_size, X_train.shape[0])
+        X_batches, y_batches = self._split_batches(X_train, y_train, batch_size)
 
-        local_score = self.clf_local.score(X_test, y_test)
-        self.local_scores_.append(local_score)
+        # train model for specified number of epochs
+        for _ in range(0, n_local_iterations):
+            for X_batch, y_batch in zip(X_batches, y_batches):
+                self.clf_local.partial_fit(X_batch, y_batch, classes=classes)
+
+            # store scores
+            local_score = self.clf_local.score(X_test, y_test)
+            self.local_scores_.append(local_score)
 
         return self
+
+    def _check_batch_size(self, batch_size, n_records):
+        if(batch_size is None) or (batch_size == 0) or (batch_size > n_records):
+            return n_records
+        return batch_size
+
+    def _split_batches(self, X, y, batch_size):
+        """Split features and target in batches according to batch_size"""
+        # shuffle X and Y
+        X, y = shuffle(X, y)
+        n_splits = X.shape[0] / batch_size
+        X_batches = np.array_split(X, n_splits)
+        y_batches = np.array_split(y, n_splits)
+        return X_batches, y_batches
+
 
 
     def _run_transformers(self):

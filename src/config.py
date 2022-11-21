@@ -15,7 +15,9 @@ from src import stats
 class ServerTitanic(server.Server):
     def __init__(self):
         super(ServerTitanic, self).__init__(
-            collab=CollaborationTitanic()
+            collab=CollaborationTitanic(),
+            batch_size=50,
+            n_local_iterations=10
         )
 
     # def _run_transformers(self, client_instance):
@@ -62,7 +64,7 @@ class CollaborationTitanic(collaboration.Collaboration):
             # classifier=model.LocalClassifier(clf=model.get_standard_classifier(), n_local_iterations=10, batch_size=50),
             # classifier=model.get_standard_classifier(),
             classifier=model.get_standard_classifier(random_state=RANDOM_STATE),
-            classifier_aggregator=aggregation.FedAvg(n_global_iterations=50),
+            classifier_aggregator=aggregation.FedAvg(n_global_iterations=10),
             statistics_aggregators={
                 'count_records': aggregation.SumValues(),
                 'nominal_categories': aggregation.NestedListUnion(unique=True),

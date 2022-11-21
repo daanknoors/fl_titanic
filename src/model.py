@@ -178,11 +178,11 @@ def get_standard_transformer_pipeline(categories=None):
     ])
     return pipe
 
-def get_standard_classifier(random_state):
-    return BatchSGD(loss='log_loss', batch_size=20, n_local_iterations=100, random_state=random_state)
+# def get_standard_classifier(random_state):
+#     return BatchSGD(loss='log_loss', batch_size=20, n_local_iterations=100, random_state=random_state)
 
-# def get_standard_classifier():
-#     return SGDClassifier(loss='log_loss', penalty='l2', random_state=config.RANDOM_STATE, warm_start=True)
+def get_standard_classifier(random_state):
+    return SGDClassifier(loss='log_loss', penalty='l2', random_state=random_state, warm_start=True)
 
 # def get_standard_pipeline(categories=None):
 #     """Get standard pipeline"""

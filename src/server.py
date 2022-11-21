@@ -14,8 +14,10 @@ from src import model
 class Server:
     """Orchestrates the movement of algorithms between clients in collaboration"""
 
-    def __init__(self, collab):
+    def __init__(self, collab, batch_size, n_local_iterations):
         self.collab = collab
+        self.batch_size = batch_size
+        self.n_local_iterations = n_local_iterations
         self.distribute_algorithms()
 
     def distribute_algorithms(self):
@@ -66,7 +68,7 @@ class Server:
         for _ in range(self.collab.classifier_aggregator.n_iterations):
             for client_instance in self.collab.clients:
                 self._update_local_model(client_instance)
-                client_instance.fit_classifier(classes=classes)
+                client_instance.fit_classifier(classes=classes, batch_size=self.batch_size, n_local_iterations=self.n_local_iterations)
 
             # get local classifiers
             local_classifiers = [c.clf_local for c in self.collab.clients]

@@ -11,6 +11,44 @@ from src import model
 from src import server
 from src import stats
 
+"""Constant variables"""
+
+# paths
+PATH_PROJECT = Path(os.getcwd()).parent
+PATH_DATA = PATH_PROJECT / 'data'
+PATH_DATA_RAW = PATH_DATA / 'raw'
+PATH_DATA_PREPROCESSED = PATH_DATA / 'preprocessed'
+PATH_MODEL = PATH_PROJECT / 'models'
+
+# filenames
+FILENAME_DATA_A = 'titanic_setA.csv'
+FILENAME_DATA_B = 'titanic_setB.csv'
+FILENAME_TRAIN_DATA_A = 'A_train.csv'
+FILENAME_TEST_DATA_A = 'A_test.csv'
+FILENAME_TRAIN_DATA_B = 'B_train.csv'
+FILENAME_TEST_DATA_B = 'B_test.csv'
+FILENAME_TEST_UNLABELED = 'test.csv'
+
+# config settings
+RANDOM_STATE = 42
+N_GLOBAL_ITERATIONS = 20
+COlOR_PALETTE = ["#393e46", "#00cde3", "#ff5722", "#d72323"]
+
+# features categories
+FEATURES_NOMINAL = ['Sex', 'Embarked']
+FEATURES_ORDINAL = ['Pclass', 'SibSp', 'Parch']
+FEATURES_INTERVAL = []
+FEATURES_RANGE = ['Age', 'Fare']
+
+FEATURES_MINIMAL = ...
+FEATURES_DROP = ['PassengerId', 'pred', 'Name', 'Ticket', 'Cabin']
+
+# target columns
+TARGET = 'Survived'
+
+
+"""Custom federated learning set-up"""
+
 
 class ServerTitanic(server.Server):
     def __init__(self):
@@ -58,7 +96,8 @@ class CollaborationTitanic(collaboration.Collaboration):
                 'nominal_categories': stats.ColumnCategories(FEATURES_NOMINAL, flatten_list=False),
                 'target_classes': stats.ColumnCategories(TARGET, flatten_list=True)
             },
-            transformers=model.get_standard_transformer_pipeline(features_nominal=FEATURES_NOMINAL,
+            transformers=model.get_standard_transformer_pipeline(features_drop=FEATURES_DROP,
+                                                                 features_nominal=FEATURES_NOMINAL,
                                                                  features_ordinal=FEATURES_ORDINAL,
                                                                  features_continuous=FEATURES_INTERVAL+FEATURES_RANGE),
             classifier=model.get_standard_classifier(random_state=RANDOM_STATE),
@@ -120,40 +159,3 @@ class DataB(data.DataPointer):
             random_state=RANDOM_STATE
         )
 
-
-
-
-
-# paths
-PATH_PROJECT = Path(os.getcwd()).parent
-PATH_DATA = PATH_PROJECT / 'data'
-PATH_DATA_RAW = PATH_DATA / 'raw'
-PATH_DATA_PREPROCESSED = PATH_DATA / 'preprocessed'
-PATH_MODEL = PATH_PROJECT / 'models'
-
-# filenames
-FILENAME_DATA_A = 'titanic_setA.csv'
-FILENAME_DATA_B = 'titanic_setB.csv'
-FILENAME_TRAIN_DATA_A = 'A_train.csv'
-FILENAME_TEST_DATA_A = 'A_test.csv'
-FILENAME_TRAIN_DATA_B = 'B_train.csv'
-FILENAME_TEST_DATA_B = 'B_test.csv'
-FILENAME_TEST_UNLABELED = 'test.csv'
-
-# config settings
-RANDOM_STATE = 42
-N_GLOBAL_ITERATIONS = 20
-SCORING_FUNCTION = 'roc_auc'
-COlOR_PALETTE = ["#393e46", "#00cde3", "#ff5722", "#d72323"]
-
-# features categories
-FEATURES_NOMINAL = ['Sex', 'Cabin', 'Embarked']
-FEATURES_ORDINAL = ['Pclass', 'SibSp', 'Parch']
-FEATURES_INTERVAL = []
-FEATURES_RANGE = ['Age', 'Fare']
-
-FEATURES_MINIMAL = ...
-FEATURES_DROP = ['PassengerID', 'pred', 'Name', 'Ticket']
-
-# target columns
-TARGET = 'Survived'

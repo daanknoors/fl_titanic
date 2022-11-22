@@ -174,11 +174,13 @@ class BatchSGD(SGDClassifier):
 #         return X_batches, y_batches
 
 
-def get_standard_transformer_pipeline(features_nominal, features_ordinal, features_continuous, categories=None):
+def get_standard_transformer_pipeline(features_drop, features_nominal, features_ordinal, features_continuous,
+                                      categories=None):
     """Get standard transformer pipeline"""
     pipe = Pipeline([
-        ('preprocess', GenericPreprocessor(features_nominal=features_nominal, features_ordinal=features_ordinal,
-                                           features_continuous=features_continuous, categories=categories)),
+        ('preprocess', GenericPreprocessor(features_drop=features_drop, features_nominal=features_nominal,
+                                           features_ordinal=features_ordinal, features_continuous=features_continuous,
+                                           categories=categories)),
         ('scale', RobustScaler()),
     ])
     return pipe

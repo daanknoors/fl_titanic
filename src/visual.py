@@ -11,31 +11,41 @@ from sklearn.metrics import classification_report, confusion_matrix, balanced_ac
 from src import model
 from src import config
 
+def plot_kde(df, x, hue):
+    """Plot KDE for numeric feature x with categorical hue"""
+    plt.figure(figsize=(8,4))
+    sns.kdeplot(x=x,data=df.dropna(),fill=True,alpha=0.5, hue=hue)
+    sns.despine()
+    plt.title(f"{x} Distribution")
+    plt.xlabel(f"{x}")
+    plt.ylabel("Density")
+    plt.show()
 
-def plot_correlation(corr):
+
+def plot_correlation(corr, annot=False):
     """Plot correlation heatmap with diverging palette and masked triangle"""
-    ax = sns.heatmap(corr, cmap=sns.diverging_palette(230, 20, as_cmap=True), annot=False, mask=np.triu(np.ones_like(corr, dtype=bool)))
+    ax = sns.heatmap(corr, cmap=sns.diverging_palette(230, 20, as_cmap=True), annot=annot, mask=np.triu(np.ones_like(corr, dtype=bool)))
     return ax
 
 
-def plot_distributions(df, column_names=None, sort_index=True, dropna=False, normalize=False):
+def plot_distributions(df, subset_columns=None, sort_index=True, dropna=False, normalize=False):
     """Plot distribution of all columns or user-specified list.
     Checks number of unique values in column to determine optimal plotting method.
     Options to normalize and include missing values.
     """
     # if only one column is given as string, create an iterable list
-    if isinstance(column_names, str):
-        column_names = [column_names]
+    if isinstance(subset_columns, str):
+        subset_columns = [subset_columns]
 
     # plot all columns
-    if not column_names:
-        column_names = df.columns
+    if not subset_columns:
+        subset_columns = df.columns
 
-    # fig, ax = plt.subplots(len(column_names), 1, figsize=(8, len(column_names) * 4))
+    # fig, ax = plt.subplots(len(subset_columns), 1, figsize=(8, len(subset_columns) * 4))
     sns.set_theme(style='ticks')
     sns.despine()
 
-    for idx, col in enumerate(column_names):
+    for idx, col in enumerate(subset_columns):
         fig, ax = plt.subplots(figsize=(8, 4))
 
         column_value_counts = df[col].value_counts(dropna=dropna, normalize=normalize)
@@ -74,3 +84,18 @@ def plot_distributions(df, column_names=None, sort_index=True, dropna=False, nor
         plt.show()
         # fig.tight_layout()
 
+
+def plot_confusion_matrix(clf, X_test, y_test, labels=None, normalize=None):
+    """Plot confusion matrix"""
+    fig, ax = plt.subplots()
+    ax.grid(False)
+    cm_display = ConfusionMatrixDisplay.from_estimator(
+        clf,
+        X_test,
+        y_test,
+        display_labels=labels,
+        cmap=plt.cm.Blues,
+        normalize=normalize,
+        ax=ax,
+    )
+    return cm_display

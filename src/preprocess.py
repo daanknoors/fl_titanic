@@ -6,7 +6,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
-from sklearn.impute import SimpleImputer
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import SimpleImputer, IterativeImputer
 
 from src import config
 
@@ -73,16 +74,16 @@ def split_x_y(df, y_column=None):
 
 class GenericPreprocessor(BaseEstimator, TransformerMixin):
     """Generic preprocessing transformer with mutations for specific data types"""
-    def __init__(self, features_nominal, features_ordinal, features_continuous, categories=None):
+    def __init__(self, features_drop, features_nominal, features_ordinal, features_continuous, categories=None):
+        self.features_drop = features_drop
         self.features_nominal = features_nominal
         self.features_ordinal = features_ordinal
         self.features_continuous = features_continuous
         self.categories = categories
 
-
     def fit(self, X, y=None):
         X = X.copy()
-        X = X.drop(config.FEATURES_DROP, errors='ignore')
+        X = X.drop(self.features_drop, axis=1, errors='ignore')
 
         # define feature categories and check if in input dataframe
         features_nominal_ = [x for x in X.columns if x in self.features_nominal]
@@ -92,7 +93,7 @@ class GenericPreprocessor(BaseEstimator, TransformerMixin):
         self.transformer_ = ColumnTransformer([
             ('ohe_nominal', OneHotEncoder(sparse=False, categories=self.categories, handle_unknown='ignore'), features_nominal_),
             ('impute_ordinal', SimpleImputer(missing_values=np.nan, strategy='most_frequent'), features_ordinal_),
-            ('impute_continuous', SimpleImputer(missing_values=np.nan, strategy='median'), features_continuous_)
+            ('impute_continuous', IterativeImputer(missing_values=np.nan, min_value=0), features_continuous_)
         ])
         self.transformer_.fit(X, y)
 

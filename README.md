@@ -1,7 +1,7 @@
 # Federated Learning - Titanic
 
 ## Objective
-Train an ML model of your choice to predict the survival probability in a federated setup and benchmark it against a model being trained on the full dataset.
+Train a ML model to predict the survival probability in a federated setup and benchmark it against a model being trained on the full dataset.
 
 ## Data
 - **Titanic**: split in two sets A and B with same feature input but different records, i.e. horizontally partitioned data.

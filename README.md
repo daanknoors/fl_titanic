@@ -26,9 +26,7 @@ fl_titanic
 |-- data/ 
 |	|-- preprocessed/
 |	|-- raw/	
-|								
-|-- models/											    
-|
+|								|
 |-- notebooks/											
 |	|-- 000_exploratory_data_analysis.ipynb				
 |	|-- 001_train_model.ipynb							

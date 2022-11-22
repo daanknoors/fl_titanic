@@ -8,6 +8,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.utils.validation import check_is_fitted
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix, roc_auc_score
 
 from src import data
 from src import utils
@@ -22,8 +23,10 @@ class Client:
         self.clf_local = clf_local
         self.transformers = transformers
         self.statistics = statistics
-        self.local_scores_ = []
-        self.global_scores_ = []
+        # self.local_scores_ = []
+        # self.global_scores_ = []
+        self.clf_scores_ = {'local_scores': [], 'global_scores': []}
+        self.clf_results_ = {}
 
     def _check_params(self):
         #todo check whether data inherits from data class (or subclasses it)
@@ -35,17 +38,26 @@ class Client:
         if not hasattr(self.clf_local, 'coef_'):
             # self.clf_local.fit(X_train, y_train)
             # set first score to 0 for global since the model hasn't been trained yet
-            self.global_scores_.append(0)
+            self.clf_scores_['global_scores'].append(0)
         else:
             # store global scores after averaging model and prior to re-training the model
             averaged_model_score = self.clf_local.score(X_test, y_test)
-            self.global_scores_.append(averaged_model_score)
+            self.clf_scores_['global_scores'].append(averaged_model_score)
 
         self.clf_local.partial_fit(X_train, y_train, classes=classes)
 
         local_score = self.clf_local.score(X_test, y_test)
-        self.local_scores_.append(local_score)
+        self.clf_scores_['local_scores'].append(local_score)
 
+        return self
+
+    def evaluate_classifier(self):
+        X_train, X_test, y_train, y_test = self._run_transformers()
+
+        y_pred = self.clf_local.predict(X_test)
+
+        self.clf_results_['confusion_matrix'] = confusion_matrix(y_test, y_pred)
+        self.clf_results_['roc_auc_score'] = roc_auc_score(y_test, y_pred)
         return self
 
 

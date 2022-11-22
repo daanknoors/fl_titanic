@@ -36,6 +36,10 @@ def load_test_data():
     return df_test_a, df_test_b
 
 
+def load_unlabeled_test_data():
+    return pd.read_csv(config.PATH_DATA_RAW / config.FILENAME_TEST_UNLABELED)
+
+
 def create_train_test_data(test_size=0.2):
     """Split input datasets in training and testing and save to disk"""
     # load data

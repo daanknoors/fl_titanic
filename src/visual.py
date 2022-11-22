@@ -85,17 +85,29 @@ def plot_distributions(df, subset_columns=None, sort_index=True, dropna=False, n
         # fig.tight_layout()
 
 
-def plot_confusion_matrix(clf, X_test, y_test, labels=None, normalize=None):
+def plot_confusion_matrix( cm, labels=None, normalize=None):
     """Plot confusion matrix"""
     fig, ax = plt.subplots()
     ax.grid(False)
-    cm_display = ConfusionMatrixDisplay.from_estimator(
-        clf,
-        X_test,
-        y_test,
+    cm_display = ConfusionMatrixDisplay(
+        confusion_matrix=cm,
         display_labels=labels,
-        cmap=plt.cm.Blues,
-        normalize=normalize,
-        ax=ax,
-    )
+    ).plot(cmap=plt.cm.Blues,
+           ax=ax
+           )
     return cm_display
+
+# def plot_confusion_matrix(clf, X_test, y_test, labels=None, normalize=None):
+#     """Plot confusion matrix"""
+#     fig, ax = plt.subplots()
+#     ax.grid(False)
+#     cm_display = ConfusionMatrixDisplay.from_estimator(
+#         clf,
+#         X_test,
+#         y_test,
+#         display_labels=labels,
+#         cmap=plt.cm.Blues,
+#         normalize=normalize,
+#         ax=ax,
+#     )
+#     return cm_display

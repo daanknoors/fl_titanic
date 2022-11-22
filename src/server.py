@@ -80,6 +80,13 @@ class Server:
             self.collab.classifier.intercept_ = intercept
             self.collab.classifier.classes_ = classes
 
+    def evaluate_classifier(self):
+        self.collab.clf_results_ = {}
+        for client_instance in self.collab.clients:
+            client_instance.evaluate_classifier()
+            self.collab.clf_results_[client_instance.name] = client_instance.clf_results_
+
+
     def __repr__(self):
         return utils.simplified_repr(self)
 

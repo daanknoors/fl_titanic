@@ -20,15 +20,16 @@ class Collaboration:
         self.classifier_aggregator = classifier_aggregator
         self.statistics_aggregators = statistics_aggregators
 
-    def merge_collab_scores(self, output_df=False):
+    def merge_classifier_scores(self, output_df=False):
         self.scores_ = {}
         for c in self.clients:
-            self.scores_[c.name] = {
-                'local': c.local_scores_,
-                'global': c.global_scores_
-            }
+            self.scores_[c.name] = {}
+            score_keys = [k for k in c.clf_scores_.keys() if 'score' in k]
+            for s in score_keys:
+                self.scores_[c.name][s] = c.clf_scores_[s]
         if not output_df:
             return self.scores_
+
         return pd.json_normalize(self.scores_).apply(pd.Series.explode).reset_index(drop=True)
 
     def __repr__(self):

@@ -26,24 +26,24 @@ fl_titanic
 |-- data/ 
 |	|-- preprocessed/
 |	|-- raw/	
-|								|
+|								
 |-- notebooks/											
 |	|-- 000_exploratory_data_analysis.ipynb				
 |	|-- 001_train_model.ipynb							
 |
 |-- src/											    
 |	|-- __init__.py
-|	|-- aggregation.py    	: federated output aggregration strategies       
-|	|-- client.py 			: client info and methods for computation on local data    
-|	|-- collaboration.py    : federation of clients and authorized algorithms                                   
-|	|-- config.py 			: project specfic variables and class instances
-|	|-- data.py           	: local data pointers
-|	|-- model.py          	: classifiers       
-|	|-- preprocess.py 		: data preprocessing methods
-|	|-- server.py         	: orchestration of algorithms between clients 
-|	|-- stats.py          	: statistical functions to compute on local data                      
-|	|-- utils.py  			: utility functions                                    
-|	|-- visual.py			: visualization methods                                    
+|	|-- aggregation.py    	  : federated output aggregration strategies       
+|	|-- client.py             : client info and methods to perform computations on client data    
+|	|-- collaboration.py      : federation of clients and authorized algorithms                                   
+|	|-- config.py             : project specfic variables and class instances
+|	|-- data.py           	  : client data pointers
+|	|-- model.py          	  : classifiers       
+|	|-- preprocess.py         : data preprocessing methods
+|	|-- server.py         	  : orchestration of algorithms between clients 
+|	|-- stats.py          	  : statistical functions to compute on local data                      
+|	|-- utils.py              : utility functions                                    
+|	|-- visual.py             : visualization methods                                    
 |
 |-- .gitignore                                  
 |-- environment.yml										

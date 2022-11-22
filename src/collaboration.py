@@ -10,7 +10,7 @@ from src import model
 
 
 class Collaboration:
-    """Clients, server, and algorithms that can be performed in a collaboration"""
+    """Clients and algorithms that can be performed in a collaborative federated study"""
 
     def __init__(self, clients, statistics, transformers, classifier, classifier_aggregator, statistics_aggregators):
         self.clients = clients
@@ -21,6 +21,7 @@ class Collaboration:
         self.statistics_aggregators = statistics_aggregators
 
     def merge_classifier_scores(self, output_df=False):
+        """Combine classifier scores from all clients"""
         self.scores_ = {}
         for c in self.clients:
             self.scores_[c.name] = {}
@@ -29,14 +30,8 @@ class Collaboration:
                 self.scores_[c.name][s] = c.clf_scores_[s]
         if not output_df:
             return self.scores_
-
         return pd.json_normalize(self.scores_).apply(pd.Series.explode).reset_index(drop=True)
 
     def __repr__(self):
         return utils.simplified_repr(self)
-    # def __repr__(self):
-    #     attributes = ", ".join([f'{k}={v}' for k, v in vars(self).items()])
-    #
-    #     return f'{self.__class__.__name__}({attributes})\n'
-
 

@@ -1,8 +1,9 @@
-"""Configuration settings"""
+"""Configuration settings specific to the data use case"""
 import numpy as np
+import pandas as pd
 import os
-from pathlib import Path
 
+from pathlib import Path
 from src import aggregation
 from src import client
 from src import collaboration
@@ -40,14 +41,13 @@ FEATURES_ORDINAL = ['Pclass', 'SibSp', 'Parch']
 FEATURES_INTERVAL = []
 FEATURES_RANGE = ['Age', 'Fare']
 
-FEATURES_MINIMAL = ...
 FEATURES_DROP = ['PassengerId', 'pred', 'Name', 'Ticket', 'Cabin']
 
 # target columns
 TARGET = 'Survived'
 
 
-"""Custom federated learning set-up"""
+"""Custom federated learning set-up for titanic prediction"""
 
 
 class ServerTitanic(server.Server):
@@ -56,18 +56,9 @@ class ServerTitanic(server.Server):
             collab=CollaborationTitanic()
         )
 
-    # def _run_transformers(self, client_instance):
-    #     """Adapt transformers by adding feature categories in OHE function in transformer pipeline"""
-    #     if not hasattr(self.collab.statistics['nominal_categories'], 'results_'):
-    #         self.run_statistics()
-    #
-    #     global_categories = self.collab.statistics['nominal_categories'].results_
-    #
-    #     # specify feature categories to pipeline to ensure categories from both datasets appear after one-hot encoding
-    #     self.collab.transformers.named_steps['preprocess'].categories = global_categories
-    #     return super(ServerTitanic, self)._run_transformers(client_instance=client_instance)
-
     def fit_classifier(self):
+        """Adapt fit classifier by setting parameters in classifier, aggregation and transformers using
+        locally computed statistics"""
         if not hasattr(self.collab.statistics['nominal_categories'], 'global_results_'):
             self.run_statistics()
 
@@ -159,3 +150,29 @@ class DataB(data.DataPointer):
             random_state=RANDOM_STATE
         )
 
+
+""" helper functions to Load data files"""
+
+def load_raw_data_a():
+    return pd.read_csv(PATH_DATA_RAW / FILENAME_DATA_A)
+
+
+def load_raw_data_b():
+    return pd.read_csv(PATH_DATA_RAW / FILENAME_DATA_B)
+
+
+def load_train_data():
+    df_train_a = pd.read_csv(PATH_DATA_PREPROCESSED / FILENAME_TRAIN_DATA_A)
+    df_train_b = pd.read_csv(PATH_DATA_PREPROCESSED / FILENAME_TRAIN_DATA_B)
+
+    return df_train_a, df_train_b
+
+
+def load_test_data():
+    df_test_a = pd.read_csv(PATH_DATA_PREPROCESSED / FILENAME_TEST_DATA_A)
+    df_test_b = pd.read_csv(PATH_DATA_PREPROCESSED / FILENAME_TEST_DATA_B)
+    return df_test_a, df_test_b
+
+
+def load_unlabeled_test_data():
+    return pd.read_csv(PATH_DATA_RAW / FILENAME_TEST_UNLABELED)

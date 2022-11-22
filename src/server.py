@@ -1,16 +1,7 @@
 """Server functions for aggregating model updates"""
-import numpy as np
-import pandas as pd
-
-from sklearn.base import BaseEstimator, TransformerMixin, ClassifierMixin
 from copy import deepcopy
 
-from src import collaboration
-from src import aggregation
-from src import stats
-from src import model
 from src import utils
-
 
 class Server:
     """Orchestrates the movement of algorithms between clients in collaboration"""
@@ -28,6 +19,7 @@ class Server:
         print('All algorithms are distributed to clients successfully')
 
     def run_statistics(self):
+        """Run local statistics and aggregate them."""
         # compute local stats
         for client_instance in self.collab.clients:
             df_train = client_instance.data_pointer.load_train_data(split_xy=False)
@@ -43,27 +35,12 @@ class Server:
             self.collab.statistics[method_name].results_ = stat_aggregator.aggregate(local_stats)
         return self
 
-    # def _run_transformers(self, client_instance):
-    #     X_train, y_train = client_instance.data_pointer.load_train_data(split_xy=True)
-    #     X_test, y_test = client_instance.data_pointer.load_test_data(split_xy=True)
-    #
-    #     X_train = self.collab.transformers.fit_transform(X_train, y_train)
-    #     X_test = self.collab.transformers.transform(X_test)
-    #     return X_train, X_test, y_train, y_test
-
-    # def _init_scores(self):
-    #     """Initialize score attributes to evaluate model training iterations"""
-    #     self.local_scores_ = {}
-    #     self.global_scores_ = {}
-    #     for c in self.collab.clients:
-    #         self.local_scores_[c.name] = []
-    #         self.global_scores_[c.name] = []
-
     def _update_local_model(self, client_instance):
         # set global classifier to local client instance
         client_instance.clf_local = deepcopy(self.collab.classifier)
 
     def fit_classifier(self, classes):
+        """train local classifiers, aggregate the parameters and re-distribute"""
         for _ in range(self.collab.classifier_aggregator.n_iterations):
             for client_instance in self.collab.clients:
                 self._update_local_model(client_instance)
@@ -80,45 +57,17 @@ class Server:
             self.collab.classifier.intercept_ = intercept
             self.collab.classifier.classes_ = classes
 
+        # update local models after final iteration
+        self._update_local_model(client_instance)
+
     def evaluate_classifier(self):
+        """Request clients to evaluate the trained classifier on their test data and collect results"""
         self.collab.clf_results_ = {}
         for client_instance in self.collab.clients:
             client_instance.evaluate_classifier()
             self.collab.clf_results_[client_instance.name] = client_instance.clf_results_
 
-
     def __repr__(self):
         return utils.simplified_repr(self)
-
-    # def _fit_local_classifiers(self):
-    #     for client_instance in self.collab.clients:
-    #         X_train, X_test, y_train, y_test = self._run_transformers(client_instance=client_instance)
-    #
-    #         # set global classifier to local client instance
-    #         client_instance.clf_local = deepcopy(self.collab.classifier)
-    #
-    #         # todo turn into mini batch SGD
-    #         if not hasattr(client_instance.clf_local, 'coef_'):
-    #             client_instance.clf_local.fit(X_train, y_train)
-    #             # set first score to 0 for global since the model hasn't been trained yet
-    #             self.global_scores_[client_instance.name].append(0)
-    #         else:
-    #             # store global scores after averaging model and prior to re-training the model
-    #             averaged_model_score = self.collab.classifier.score(X_test, y_test)
-    #             self.global_scores_[client_instance.name].append(averaged_model_score)
-    #
-    #             # todo now it only does one sample i think
-    #             client_instance.clf_local.partial_fit(X_train, y_train)
-    #
-    #         # todo which scores to store? Now only store score after re-training global on locat data
-    #         local_score = client_instance.clf_local.score(X_test, y_test)
-    #         self.local_scores_[client_instance.name].append(local_score)
-    #     return self
-
-
-
-
-
-
 
 

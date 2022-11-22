@@ -4,12 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from sklearn.metrics import precision_recall_curve, average_precision_score, RocCurveDisplay, ConfusionMatrixDisplay
-from sklearn.metrics import classification_report, confusion_matrix, balanced_accuracy_score, roc_auc_score
+from sklearn.metrics import ConfusionMatrixDisplay
 
-
-from src import model
-from src import config
 
 def plot_kde(df, x, hue):
     """Plot KDE for numeric feature x with categorical hue"""
@@ -82,7 +78,6 @@ def plot_distributions(df, subset_columns=None, sort_index=True, dropna=False, n
             ax.set_ylabel('Count')
 
         plt.show()
-        # fig.tight_layout()
 
 
 def plot_confusion_matrix( cm, labels=None, normalize=None):
@@ -96,18 +91,3 @@ def plot_confusion_matrix( cm, labels=None, normalize=None):
            ax=ax
            )
     return cm_display
-
-# def plot_confusion_matrix(clf, X_test, y_test, labels=None, normalize=None):
-#     """Plot confusion matrix"""
-#     fig, ax = plt.subplots()
-#     ax.grid(False)
-#     cm_display = ConfusionMatrixDisplay.from_estimator(
-#         clf,
-#         X_test,
-#         y_test,
-#         display_labels=labels,
-#         cmap=plt.cm.Blues,
-#         normalize=normalize,
-#         ax=ax,
-#     )
-#     return cm_display

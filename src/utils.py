@@ -1,14 +1,9 @@
 """Utility functions"""
-import numpy as np
-import pandas as pd
-
-from src import config
-
 
 def simplified_repr(self):
     """Simplified repr message for displaying all types of parameters in instance.
     Instance might have classes as parameters. Parameters within these classes are
-    not displayed to reduce output length"""
+    not displayed on purpose to reduce output length"""
     msg = f"{self.__class__.__name__}("
 
     dict_vars = vars(self)
@@ -55,5 +50,4 @@ def simplified_repr(self):
             msg += ', \n'
 
     msg += "\n)\n"
-    # attributes = ", ".join([f"{k}={v}" for k, v in vars(self).items()])
     return msg
